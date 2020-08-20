@@ -1,0 +1,27 @@
+#!/bin/bash
+set -euo pipefail
+
+# Human-friendly wrapper for unity-meta-check
+
+BASE_DIR="$(cd "$(dirname "$0")"; pwd)"
+
+
+info() {
+  local message="$*"
+  printf "${message}\n" 1>&2
+}
+
+
+throw() {
+  local message="$*"
+  printf "${message}\n" 1>&2
+  false
+}
+
+
+main() {
+	"${BASE_DIR}/unity-meta-check-compat" -silent "$@" && info ok || throw ng
+}
+
+
+main "$@"

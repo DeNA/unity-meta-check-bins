@@ -1,0 +1,36 @@
+#!/bin/bash
+set -euo pipefail
+
+BASE_DIR="$(cd "$(dirname "$0")"; pwd)"
+
+
+throw() {
+	local message="$*"
+	printf "$message" 1>&2
+	false
+}
+
+
+main() {
+	local target_dir="$1"
+
+	[[ -d "$target_dir" ]] || throw "no such a directory: $target_dir"
+
+	case "$OSTYPE" in
+		linux*)
+			find "${BASE_DIR}/linux-amd64" -type f -print0 | xargs -0 -I{} cp -av {} "$target_dir/"
+			;;
+		darwin*)
+			find "${BASE_DIR}/darwin-amd64" -type f -print0 | xargs -0 -I{} cp -av {} "$target_dir/"
+			;;
+		msys | cygwin | win32)
+			find "${BASE_DIR}/windows-amd64" -type f -print0 | xargs -0 -I{} cp -av {} "$target_dir/"
+			;;
+		*)
+			throw "unsupported platform: $OSTYPE"
+			;;
+	esac
+}
+
+
+main "$@"

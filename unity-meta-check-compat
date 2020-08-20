@@ -1,0 +1,37 @@
+#!/bin/bash
+set -euo pipefail
+
+# Cross-OS wapper for unity-meta-check. Supported OS: macOS/Linux/Windows
+
+BASE_DIR="$(cd "$(dirname "$0")"; pwd)"
+DARWIN_64_DIR="${BASE_DIR}/darwin-amd64"
+LINUX_64_DIR="${BASE_DIR}/linux-amd64"
+WINDOWS_64_DIR="${BASE_DIR}/windows-amd64"
+
+
+throw() {
+  local message="$*"
+  printf "${message}\n" 1>&2
+  false
+}
+
+
+main() {
+	case "$OSTYPE" in
+		darwin*)
+			"${DARWIN_64_DIR}/unity-meta-check" "$@"
+			;;
+		linux*)
+			"${LINUX_64_DIR}/unity-meta-check" "$@"
+			;;
+		msys | cygwin | win32)
+			"${WINDOWS_64_DIR}/unity-meta-check.exe" "$@"
+			;;
+		*)
+			throw "unsupported os: $OSTYPE"
+			;;
+	esac
+}
+
+
+main "$@"
