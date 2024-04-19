@@ -17,20 +17,42 @@ throw() {
 
 
 main() {
+	local os
+	local arch
+	local suffix
+
 	case "$OSTYPE" in
 		darwin*)
-			"${DARWIN_64_DIR}/unity-meta-check" "$@"
+			os=darwin
+			suffix=""
 			;;
 		linux*)
-			"${LINUX_64_DIR}/unity-meta-check" "$@"
+			os=linux
+			suffix=""
 			;;
 		msys | cygwin | win32)
-			"${WINDOWS_64_DIR}/unity-meta-check.exe" "$@"
+			os=windows
+			suffix=".exe"
 			;;
 		*)
 			throw "unsupported os: $OSTYPE"
 			;;
 	esac
+
+	local m="$(uname -m)"
+	case "$m" in
+		arm64)
+			arch=arm64
+			;;
+		aarch64)
+			arch=amd64
+			;;
+		*)
+			throw "unsupported arch: $m"
+			;;
+	esac
+
+	"${BASE_DIR}/${os}-${arch}/unity-meta-check${suffix}"
 }
 
 
